@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wjlmgqs.swp.core.enums.WssClientType;
-import org.wjlmgqs.swp.core.utils.EnumUtils;
 import org.wjlmgqs.swp.core.utils.RedisUtils;
 
 import javax.websocket.Session;
@@ -74,7 +73,7 @@ public class WssTaskServiceImpl implements WssTaskService {
                 clientIds.add(key);
             }
             if (clientIds.size() > 0) {
-                LOG.info("ThreadId -> {} , 同步[{}]客户会话到 redis wss keySize -> {} , keys -> {} ", Thread.currentThread().getId(), wssClientType.getValue(), clientIds.size(), StringUtils.join(clientIds, ","));
+                LOG.info("ThreadId -> {} , 同步[{}]会话到 redis , 数量 -> {} , clientIds -> {} ", Thread.currentThread().getId(), wssClientType.getValue(), clientIds.size(), StringUtils.join(clientIds, ","));
             }
         } catch (Exception e) {
             LOG.error("[{}]服务-定时任务-客户端注册 出现异常 -> {} ", wssClientType.getValue(), e);

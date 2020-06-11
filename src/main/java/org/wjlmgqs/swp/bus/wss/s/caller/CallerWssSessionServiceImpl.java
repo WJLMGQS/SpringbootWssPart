@@ -1,6 +1,8 @@
 package org.wjlmgqs.swp.bus.wss.s.caller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wjlmgqs.swp.core.enums.WssClientType;
 import org.wjlmgqs.swp.core.wss.s.AbstractWssSessionService;
@@ -9,6 +11,9 @@ import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
 @Slf4j
 @Service
 public class CallerWssSessionServiceImpl extends AbstractWssSessionService {
+
+    @Autowired
+    protected DozerBeanMapper dozerBeanMapper;
 
     /**
      * 声明叫号类型

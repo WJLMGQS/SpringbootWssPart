@@ -1,9 +1,10 @@
-package org.wjlmgqs.swp.core.config;
+package org.wjlmgqs.swp.bus.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.wjlmgqs.swp.core.constant.SwpConstants;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,7 +21,11 @@ public class ExecutorConfig {
     @Value("${async.executor.thread.name.prefix}")
     private String namePrefix;
 
-    @Bean(name = "asyncServiceExecutor")
+
+    /**
+     * 配置会话信息同步的多线程服务
+     */
+    @Bean(name = SwpConstants.JOB_THREAD_EXECUTOR_NAME)
     public Executor asyncServiceExecutor() {
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

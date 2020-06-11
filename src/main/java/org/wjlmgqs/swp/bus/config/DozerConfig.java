@@ -1,4 +1,4 @@
-package org.wjlmgqs.swp.core.config;
+package org.wjlmgqs.swp.bus.config;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.spring.DozerBeanMapperFactoryBean;

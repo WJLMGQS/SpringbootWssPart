@@ -3,8 +3,6 @@ package org.wjlmgqs.swp.core.wss.s;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.dozer.DozerBeanMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.wjlmgqs.swp.core.constant.RedisKeys;
 import org.wjlmgqs.swp.core.enums.WssClientType;
@@ -23,9 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public abstract class AbstractWssSessionService implements IWssSessionService {
-
-    @Autowired
-    protected DozerBeanMapper dozerBeanMapper;
 
     /**
      * 定义所有实现了的wss服务
