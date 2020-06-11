@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.wjlmgqs.swp.core.constant.RedisKeys;
+import org.wjlmgqs.swp.core.constant.SwpRedisKeys;
 import org.wjlmgqs.swp.core.enums.WssClientType;
 import org.wjlmgqs.swp.core.enums.WssSessionType;
-import org.wjlmgqs.swp.core.exps.CustomizedException;
+import org.wjlmgqs.swp.core.exps.SwpCustomizedException;
 import org.wjlmgqs.swp.core.utils.RedisUtils;
 import org.wjlmgqs.swp.core.utils.StrUtils;
 
@@ -70,19 +70,19 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
      * redis key 操作
      */
     public static String msgCacheKey(String uuid, WssClientType wssType) {
-        return RedisKeys.getBuzKey(RedisKeys.FUNC_WSS_CLIENT_MSG + wssType.getCode() + "_", uuid);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_MSG + wssType.getCode() + "_", uuid);
     }
 
     public static String sessionCacheKey(String clientId, WssClientType wssType) {
-        return RedisKeys.getBuzKey(RedisKeys.FUNC_WSS_CLIENT_SESSION + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_SESSION + wssType.getCode() + "_", clientId);
     }
 
     public static String taskCacheKey(String clientId, WssClientType wssType) {
-        return RedisKeys.getBuzKey(RedisKeys.FUNC_WSS_TASK_LIST + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LIST + wssType.getCode() + "_", clientId);
     }
 
     public static String taskLockCacheKey(String clientId, WssClientType wssType) {
-        return RedisKeys.getBuzKey(RedisKeys.FUNC_WSS_TASK_LOCK + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LOCK + wssType.getCode() + "_", clientId);
     }
 
 
@@ -140,7 +140,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         //诊所渠道
         String clinicKey = RedisUtils.get(clinciSessionKey, String.class);
         if (StringUtils.isEmpty(clinicKey)) {
-            throw new CustomizedException("客户端[" + this.getWssClientType().getValue() + "](" + clientId + ")未链接");
+            throw new SwpCustomizedException("客户端[" + this.getWssClientType().getValue() + "](" + clientId + ")未链接");
         }
         long currTimer = new Date().getTime();
         //构建会话消息内容
@@ -176,12 +176,12 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
                 }
                 if (costTime >= maxCostTime) {//超时判断
                     log.error("{}服务 读取客户端响应超时 clientId -> {} , msgCacheKey -> {} , maxCostTime -> {} , costTime -> {} ， request data -> {} ", wssType.getValue(), clientId, msgCacheKey, maxCostTime, costTime);
-                    throw new CustomizedException(wssType.getValue() + "客户端请求超时");
+                    throw new SwpCustomizedException(wssType.getValue() + "客户端请求超时");
                 }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new CustomizedException(wssType + "服务端读取客户端响应异常，请稍后再试！");
+            throw new SwpCustomizedException(wssType + "服务端读取客户端响应异常，请稍后再试！");
         }
         return result;
     }
@@ -210,7 +210,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         synchronized (socketTasks.get(clientId)) {//一个诊所会话的信息限制在300数量
             List<WssSessionTaskCahce> tasks = socketTasks.get(clientId).getTasks();
             if (tasks.size() >= AbstractWssSessionService.CACHE_TASK_MAX_SIZE_300) {
-                throw new CustomizedException(this.getWssClientType().getValue() + "任务繁忙，请稍后再试！");
+                throw new SwpCustomizedException(this.getWssClientType().getValue() + "任务繁忙，请稍后再试！");
             }
             tasks.add(taskCahce);//加入到逻辑队列中，等待定时任务刷新到缓存
         }

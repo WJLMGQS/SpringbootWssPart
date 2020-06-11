@@ -1,7 +1,7 @@
 package org.wjlmgqs.swp.core.utils;
 
 import org.wjlmgqs.swp.core.enums.EnumInterface;
-import org.wjlmgqs.swp.core.exps.CustomizedException;
+import org.wjlmgqs.swp.core.exps.SwpCustomizedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,7 +189,7 @@ public class EnumUtils {
      */
     private static <T extends EnumInterface> void isEnum(Class<T> tClass) {
         if (!tClass.isEnum()) {
-            throw new CustomizedException("未找到有效的枚举信息");//无效的枚举class
+            throw new SwpCustomizedException("未找到有效的枚举信息");//无效的枚举class
         }
     }
 

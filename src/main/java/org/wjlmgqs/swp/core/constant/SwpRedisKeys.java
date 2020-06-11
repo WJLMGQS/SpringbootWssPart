@@ -1,6 +1,6 @@
 package org.wjlmgqs.swp.core.constant;
 
-public class RedisKeys {
+public class SwpRedisKeys {
 
     /**
      * 模块为度

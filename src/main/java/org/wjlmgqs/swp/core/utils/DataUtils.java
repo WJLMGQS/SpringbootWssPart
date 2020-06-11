@@ -3,7 +3,7 @@ package org.wjlmgqs.swp.core.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.CollectionUtils;
-import org.wjlmgqs.swp.core.exps.CustomizedException;
+import org.wjlmgqs.swp.core.exps.SwpCustomizedException;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +28,7 @@ public class DataUtils {
 
     public static <T> T null2Error(T obj, String msg) {
         if (obj == null) {
-            throw new CustomizedException(msg);
+            throw new SwpCustomizedException(msg);
         }
         return obj;
     }
