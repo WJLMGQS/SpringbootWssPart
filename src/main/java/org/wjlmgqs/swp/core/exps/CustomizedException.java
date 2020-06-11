@@ -13,6 +13,7 @@ public class CustomizedException extends RuntimeException {
     private String msg;
 
     public CustomizedException(String msg) {
+        this.code = "SWP_00001";
         this.msg = msg;
     }
 

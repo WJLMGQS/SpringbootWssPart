@@ -43,41 +43,32 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     public static Map<String, ConcurrentHashMap<String, Session>> WSS_SESSIONS = new HashMap<>();
 
 
-
     /**
      * 将自己做未服务注册到服务池里
      */
     public AbstractWssSessionService() {
         WSS_SESSION_SERVICES.put(this.getWssClientType().getCode(), this.getClass());
         WSS_TASKS.put(this.getWssClientType().getCode(), new ConcurrentHashMap<>());
+        WSS_SESSIONS.put(this.getWssClientType().getCode(), new ConcurrentHashMap<>());
         log.debug("...AbstractWssSessionService.init 添加wssType -> {} ");
     }
-
-
 
     /**
      * wss类型:所有实现类都需要声明自己的类型
      */
     public abstract WssClientType getWssClientType();
 
-
-
     public ConcurrentHashMap<String, WssSessionTaskCahceList> getSocketTasks() {
-        return WSS_TASKS.get(this.getWssClientType());
+        return WSS_TASKS.get(this.getWssClientType().getCode());
     }
 
     public ConcurrentHashMap<String, Session> getSocketSessions() {
-        return WSS_SESSIONS.get(this.getWssClientType());
+        return WSS_SESSIONS.get(this.getWssClientType().getCode());
     }
 
     public static ConcurrentHashMap<String, Session> getSocketSessions(WssClientType wssType) {
         return WSS_SESSIONS.get(wssType.getCode());
     }
-
-
-
-
-
 
 
     /**
@@ -120,9 +111,9 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
             results.put("msg", "success");
             String msg = JSON.toJSONString(results);
             sendClientSessionMsg(session, sessionMsg.setData(msg));
-            log.info("{}服务 clientId -> {} ，发送加入会话信息 , msg -> {} ", this.getWssClientType(), clientId, msg);
+            log.info("{}服务 clientId -> {} ，发送加入会话信息 , msg -> {} ", this.getWssClientType().getCode(), clientId, msg);
         } catch (Exception e) {
-            log.error("{}服务 clientId -> {} ，添加诊所会话异常 , msg -> {} ", this.getWssClientType(), clientId, JSON.toJSONString(sessionMsg));
+            log.error("{}服务 clientId -> {} ，添加诊所会话异常 , msg -> {} ", this.getWssClientType().getCode(), clientId, JSON.toJSONString(sessionMsg));
             e.printStackTrace();
             return null;
         }
@@ -154,7 +145,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         //诊所渠道
         String clinicKey = RedisUtils.get(clinciSessionKey, String.class);
         if (StringUtils.isEmpty(clinicKey)) {
-            throw new CustomizedException("诊所(" + clientId + ")客户端(" + this.getWssClientType().getValue() + ")未链接");
+            throw new CustomizedException("客户端[" + this.getWssClientType().getValue() + "](" + clientId + ")未链接");
         }
         long currTimer = new Date().getTime();
         //构建会话消息内容
@@ -185,7 +176,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
                 msgTmp = RedisUtils.get(msgCacheKey, String.class);
                 if (!StringUtils.isEmpty(msgTmp)) {//已经成功返回消息
                     result = JSON.parseObject(msgTmp, tClass);
-                    log.info("{}服务 读取客户端响应成功 clientId -> {} , msgCacheKey -> {} , costTime -> {} , result -> {} ", wssType.getValue(), clientId, msgCacheKey, costTime, JSON.toJSONString(result));
+                    log.debug("{}服务 读取客户端响应成功 clientId -> {} , msgCacheKey -> {} , costTime -> {} , result -> {} ", wssType.getValue(), clientId, msgCacheKey, costTime, JSON.toJSONString(result));
                     break;
                 }
                 if (costTime >= maxCostTime) {//超时判断
@@ -203,7 +194,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     public static void sendSocketMsg(String clientId, String msg, ConcurrentHashMap<String, Session> socketSessions, WssClientType wssType) {
         if (socketSessions.get(clientId) != null) {
             socketSessions.get(clientId).getAsyncRemote().sendText(msg);
-            log.info("{}服务 发送信息给客户端 clientId -> {} , msg -> {}  ", wssType.getValue(), clientId, msg);
+            log.debug("{}服务 发送信息给客户端 clientId -> {} , msg -> {}  ", wssType.getValue(), clientId, msg);
         }
     }
 
@@ -272,7 +263,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
             try {
                 Thread.sleep(AbstractWssSessionService.CACHE_LOCK_RETRY_TIME_200);//0.2秒
             } catch (Exception e) {
-                log.info("{}服务>>>>>>>>>>添加任务锁失败，等待下次 诊所：lockKey -> {}  , clientId -> {} , e ->  {} ", wssType.getValue(), lockKey, clientId, e.getMessage());
+                log.error("{}服务>>>>>>>>>>添加任务锁失败，等待下次 诊所：lockKey -> {}  , clientId -> {} , e ->  {} ", wssType.getValue(), lockKey, clientId, e.getMessage());
             }
         }
         return flag ? timer : 0;
@@ -299,7 +290,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         synchronized (session) {
             try {
                 session.getBasicRemote().sendText(str);
-                log.info("{}服务 ，发送会话信息 msg -> {} ", getWssClientType(), msg);
+                log.debug("{}服务 ，发送会话信息 msg -> {} ", getWssClientType().getCode(), str);
             } catch (IOException e) {
                 log.error("wss发送给客户端消息异常 session -> {} , msg -> {} ", session.getId(), str);
                 e.printStackTrace();
