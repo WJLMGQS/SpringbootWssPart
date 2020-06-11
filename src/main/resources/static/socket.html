@@ -1,5 +1,7 @@
-<html>
+<!doctype html>
+<html lang="zh-cmn-Hans">
 <header>
+    <meta charset="UTF-8">
     <script>
 
         /**
@@ -44,7 +46,7 @@
             ws.onopen = function (evt) {
                 var data = SESSION_MSG_ENTITY.data(SESSION_TYPE.OPEN, {"clientId": clientId});
                 SESSION_MSG_ENTITY.init(data);
-                ws.send(JSON.stringify(obj));
+                ws.send(JSON.stringify(data));
             };
 
             //4：收到服务端消息

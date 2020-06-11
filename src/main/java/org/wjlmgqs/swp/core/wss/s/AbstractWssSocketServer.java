@@ -95,7 +95,7 @@ public abstract class AbstractWssSocketServer<T> implements ApplicationContextAw
 
     public IWssSessionService getWssSessionService() {
         if (this.wssSessionService == null) {
-            this.wssSessionService = APPLICATION_CONTEXT.getBean(AbstractWssSessionService.WSS_SESSION_SERVICES.get(this.wssType));
+            this.wssSessionService = APPLICATION_CONTEXT.getBean(AbstractWssSessionService.WSS_SESSION_SERVICES.get(this.wssType.getCode()));
         }
         return this.wssSessionService;
     }

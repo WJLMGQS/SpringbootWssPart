@@ -27,7 +27,6 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     @Autowired
     protected DozerBeanMapper dozerBeanMapper;
 
-
     /**
      * 定义所有实现了的wss服务
      */
