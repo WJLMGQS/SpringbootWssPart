@@ -1,0 +1,110 @@
+<html>
+<header>
+    <script>
+
+        /**
+         * 会话通讯类型
+         * @type {{HEART: string, OPEN: string, SERVER: string, CLIENT: string}}
+         */
+        var SESSION_TYPE = {
+            "HEART": "0000",
+            "OPEN": "0001",
+            "SERVER": "0002",
+            "CLIENT": "0003"
+        };
+
+        /**
+         * 通讯消息体
+         * @type {{data: SESSION_MSG.data, init: SESSION_MSG.init}}
+         */
+        var SESSION_MSG_ENTITY = {
+            data: function (sessionType, data) {
+                return {
+                    "code": "0",
+                    "msg": "open session",
+                    "sessionType": sessionType,
+                    "sessionTime": new Date().getTime(),
+                    "data": data ? data : "",
+                    "uuid": ""
+                };
+            },
+            init: function (data) {
+                data.uuid = new Date().getTime();
+            }
+        }
+
+        var clientId = "999";
+        var ws;
+        var life = true;//心跳包是否检测
+        connect();
+
+        function connect() {
+            ws = new WebSocket("ws://localhost:8081/wss/caller");
+            //3：通过socket注册客户端窗口都服务端
+            ws.onopen = function (evt) {
+                var data = SESSION_MSG_ENTITY.data(SESSION_TYPE.OPEN, {"clientId": clientId});
+                SESSION_MSG_ENTITY.init(data);
+                ws.send(JSON.stringify(obj));
+            };
+
+            //4：收到服务端消息
+            ws.onmessage = function (evt) {
+                //服务端返回的数据
+                var data = evt.data;
+                console.log("接收到服务端消息 -> " + JSON.stringify(data));
+                var obj = JSON.parse(data);
+                if (obj.sessionType == SESSION_TYPE.OPEN) {//0:当前客户端成功加入服务端会话
+                    console.log("成功加入会话");
+                } else if (obj.sessionType == SESSION_TYPE.SERVER) {//1：收到叫号信息
+                    console.log("接收到服务端消息 -> " + obj.data);
+                } else if (obj.sessionType == SESSION_TYPE.CLIENT) {//出现异常信息，提示到客户端，并需要重启socket注册
+                    console.log("接收到请求结果 -> " + obj.data);
+                }
+            };
+
+            ws.onclose = function (evt) {
+                console.log("关闭客户端");
+                ws = null;//等待重新连接
+            };
+
+            ws.onError = function (evt) {
+                console.log("onError。。。");
+                ws = null;//等待重新连接
+            }
+
+        }
+
+        //心跳检测
+        function heart() {
+            if (!life) {
+                console.log("结束当前窗口生命...");
+                return;
+            }
+            if (ws == null) {
+                connect();//重新连接
+            } else {
+                var data = SESSION_MSG_ENTITY.data(SESSION_TYPE.HEART, clientId);
+                SESSION_MSG_ENTITY.init(data);
+                //3.2：发起请求
+                console.log("心跳包检测...");
+                ws.send(JSON.stringify(data));
+            }
+        }
+
+        //开启心跳检测
+        setInterval(function () {
+            heart();//开启定时心跳检测服务端，防止长久没有访问被服务端拒绝
+        }, 25000);
+
+
+    </script>
+</header>
+
+
+<body>
+
+
+</body>
+
+
+</html>

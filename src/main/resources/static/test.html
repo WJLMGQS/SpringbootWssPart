@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <title>中文测试</title>
+</head>
+<body id="id">
+
+</body>
+</html>
+<script>
+
+
+
+
+    var synth = window.speechSynthesis
+    var u = new SpeechSynthesisUtterance();
+    //汉语
+    u.lang = 'zh-HK';
+    u.rate = 1;
+    function speak(textToSpeak) {
+        u.text = textToSpeak;
+        synth.speak(u)
+    }
+    var str = "习近平强调，中方愿同冈方一道，保持两国关系良好发展势头，推动双方互利合作行稳致远，长远、有效地惠及两国人民。要牢牢把握一个中国原则和两国友好大方向，在涉及彼此核心利益和重大关切问题上相互理解和支持，永做真诚友好、平等相待的好朋友、好伙伴。要密切两国政府、政党、立法机构交往，加强治国理政经验交流。中方重视双方在农业、电力、基础设施等领域合作，愿帮助冈方增强自身造血能力，实现可持续发展。双方要加强文化、教育、新闻媒体、青年、妇女、卫生、旅游等各类民间交往，共同建设好孔子学院，筑牢两国友好的民意基础。中方愿同冈方加强安全领域合作，加强国际和地区事务中沟通协调，为维护西非地区和平稳定作出贡献。"
+
+ 
+    speak(str)
+    
+    
+</script>
