@@ -3,6 +3,8 @@ package org.wjlmgqs.swp.core.wss.s;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.wjlmgqs.swp.core.constant.SwpRedisKeys;
 import org.wjlmgqs.swp.core.enums.WssClientType;
@@ -24,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 public abstract class AbstractWssSessionService implements IWssSessionService {
+
+    @Autowired
+    protected DozerBeanMapper dozerBeanMapper;
 
     /**
      * 定义所有实现了的wss服务
@@ -86,19 +91,19 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
      * redis key 操作
      */
     public String msgCacheKey(String uuid) {
-        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_MSG + this.getWssClientType().getCode() + "_", uuid);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_MSG + this.getWssClientType().getCode() + ":", uuid);
     }
 
     public static String sessionCacheKey(String clientId, WssClientType wssType) {
-        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_SESSION + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_SESSION + wssType.getCode() + ":", clientId);
     }
 
     public static String taskCacheKey(String clientId, WssClientType wssType) {
-        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LIST + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LIST + wssType.getCode() + ":", clientId);
     }
 
     public static String taskLockCacheKey(String clientId, WssClientType wssType) {
-        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LOCK + wssType.getCode() + "_", clientId);
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_TASK_LOCK + wssType.getCode() + ":", clientId);
     }
 
 
@@ -149,7 +154,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     /**
      * 发送业务消息，需要暂存会话，等客户端响应后唤醒
      */
-    public <T extends WssSessionMsgData> T sendBusiMsg(String clientId, WssSessionMsgData data, long maxCostTime, Class<T> tClass) {
+    public <T extends WssSessionMsg> T sendBusiMsg(String clientId, WssSessionMsgData data, long maxCostTime, Class<T> tClass) {
 
         String clinciSessionKey = sessionCacheKey(clientId + "", this.getWssClientType());
 
@@ -176,7 +181,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         return readClientMsg(clinicKey, msgCacheKey, currTimer, this.getWssClientType(), maxCostTime, tClass); //定时从消息池中读取对应uuid的消息
     }
 
-    public static <T extends WssSessionMsgData> T readClientMsg(String clientId, String msgCacheKey, long currTimer, WssClientType wssType, long maxCostTime, Class<T> tClass) {
+    public static <T extends WssSessionMsg> T readClientMsg(String clientId, String msgCacheKey, long currTimer, WssClientType wssType, long maxCostTime, Class<T> tClass) {
         //休眠一段时间，从会话队列中读取客户端响应的数据（等待的时候，需要保证足够客户端响应）
         T result;
         try {
@@ -280,24 +285,11 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
         return flag ? timer : 0;
     }
 
-
-    /**
-     * 发送业务消息，需要暂存会话，等客户端响应后唤醒
-     */
-    public void sendClientSessionMsg(Session session, WssSessionMsgData msg , WssSessionMsg sessionMsg) {
-        WssSessionMsg message = sessionMsg
-                .setSessionType(WssSessionType.CLIENT.getCode())
-                .setData(JSON.toJSONString(msg))
-                .initSessionTime()
-                ;
-        this.sendClientSessionMsg(session , message);
-    }
-
     /**
      * 发送业务消息，需要暂存会话，等客户端响应后唤醒
      */
     public void sendClientSessionMsg(Session session, WssSessionMsg msg) {
-        String str = JSON.toJSONString(msg);
+        String str = JSON.toJSONString(msg.initSessionTime());
         synchronized (session) {
             try {
                 session.getBasicRemote().sendText(str);
@@ -312,13 +304,12 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
 
     /**
      * 处理客户端请求，默认实现
-     * @param wssSession
-     * @param session
-     * @param data
      */
     @Override
     public void queryCallback(WssSession wssSession, Session session, WssSessionMsg data) {
-
+        log.debug("{}服务 ，默认处理客户端请求 ...... 啥也不干", getWssClientType().getCode());
+        data.setCode(WssSessionMsg.SESSION_CODE_SUCC);
+        this.sendClientSessionMsg(session, data);
     }
 
 }

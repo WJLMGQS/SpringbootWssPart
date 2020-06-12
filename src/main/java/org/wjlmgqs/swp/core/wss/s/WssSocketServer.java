@@ -62,13 +62,8 @@ public class WssSocketServer extends AbstractWssSocketServer {
             super.setWssSession(wssSession);
             this.closeUnsafeSession(msg, session, sessionType);
         } else if (WssSessionType.SERVER == sessionType) {//业务通信-云管家请求客户端
-            WssSessionMsgData sessionMsgData = JSON.parseObject(sessionMsg.getData(), WssSessionMsgData.class);
-
-            getWssSessionService().msgCacheKey(sessionMsg.getUuid());
-
-
-            String msgCacheKey = AbstractWssSessionService.msgCacheKey(sessionMsg.getUuid(), this.getWssType());
-            RedisUtils.set(msgCacheKey, sessionMsg.getData(), AbstractWssSessionService.CACHE_TIME_DATA_EXPIRE_10000);
+            String msgCacheKey = getWssSessionService().msgCacheKey(sessionMsg.getUuid());
+            RedisUtils.set(msgCacheKey, sessionMsg, AbstractWssSessionService.CACHE_TIME_DATA_EXPIRE_10000);
         } else if (WssSessionType.CLIENT == sessionType) {//业务通信-客户端请求云管家
             if (!this.closeUnsafeSession(msg, session, sessionType)) {//关闭非法的会话：只有经过open操作设置了clientId的才有效
                 getWssSessionService().queryCallback(this.getWssSession(), session, sessionMsg);

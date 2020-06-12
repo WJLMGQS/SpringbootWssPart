@@ -17,12 +17,12 @@ public interface IWssSessionService {
     /**
      * 向指定会话发送消息
      */
-    void sendClientSessionMsg(Session session, WssSessionMsgData msg , WssSessionMsg sessionMsg);
+    void sendClientSessionMsg(Session session, WssSessionMsg msg);
 
     /**
-     * 向指定会话发送消息
+     * 根据uuid获取redis中的通讯响应消息
      */
-    void sendClientSessionMsg(Session session, WssSessionMsg msg);
+    String msgCacheKey(String uuid);
 
     /**
      * lock缓存失败重试最大次数及间隔时间

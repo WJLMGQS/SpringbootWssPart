@@ -1,12 +1,10 @@
 package org.wjlmgqs.swp.bus.wss.s.caller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dozer.DozerBeanMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wjlmgqs.swp.core.enums.WssClientType;
 import org.wjlmgqs.swp.core.wss.s.AbstractWssSessionService;
-import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
+import org.wjlmgqs.swp.core.wss.s.WssSessionMsg;
 
 /**
  * Wss实现 - 叫号服务
@@ -14,9 +12,6 @@ import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
 @Slf4j
 @Service
 public class CallerWssSessionServiceImpl extends AbstractWssSessionService {
-
-    @Autowired
-    protected DozerBeanMapper dozerBeanMapper;
 
     /**
      * 声明叫号类型
@@ -31,15 +26,10 @@ public class CallerWssSessionServiceImpl extends AbstractWssSessionService {
     /**
      * 发送业务消息，需要暂存会话，等客户端响应后唤醒
      */
-    public <T extends WssSessionMsgData> T sendBusiMsg(WssCallerCallParam callerCallParam) {
-
-        String clientId = callerCallParam.getClinicId() + "";//组装成已经连接客户端的标识
-
-        WssSessionMsgData wssSessionMsgData = super.sendBusiMsg(clientId,
-                dozerBeanMapper.map(callerCallParam , CallSessionCallMsgData.class),
-                AbstractWssSessionService.HTTP_SLEEP_TIME_MAX_10000, WssSessionMsgData.class);
-
-        return (T) wssSessionMsgData; //定时从消息池中读取对应uuid的消息
+    public <T extends WssSessionMsg> T sendBusiMsg(WssCallerCallParam callerCallParam) {
+        return (T) super.sendBusiMsg(callerCallParam.getClinicId() + "",//组装成已经连接客户端的标识
+                dozerBeanMapper.map(callerCallParam, CallSessionCallMsgData.class),
+                AbstractWssSessionService.HTTP_SLEEP_TIME_MAX_10000, WssSessionMsg.class); //定时从消息池中读取对应uuid的消息
     }
 
 
