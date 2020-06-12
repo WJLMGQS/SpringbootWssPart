@@ -10,7 +10,7 @@ import org.wjlmgqs.swp.bus.vo.WssCallerCallVo;
 import org.wjlmgqs.swp.bus.wss.s.caller.CallerWssSessionServiceImpl;
 import org.wjlmgqs.swp.bus.wss.s.caller.WssCallerCallParam;
 import org.wjlmgqs.swp.core.wss.s.IWssSessionService;
-import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
+import org.wjlmgqs.swp.core.wss.s.WssSessionMsg;
 
 import javax.annotation.Resource;
 
@@ -36,9 +36,9 @@ public class WssController {
      * 叫号
      */
     @RequestMapping("/caller/call")
-    public Object callerCall(@RequestBody WssCallerCallVo vo) {
+    public WssSessionMsg callerCall(@RequestBody WssCallerCallVo vo) {
         WssCallerCallParam callerCallParam = dozerBeanMapper.map(vo, WssCallerCallParam.class);
-        WssSessionMsgData wssSessionMsgData = ((CallerWssSessionServiceImpl) wssSessionService).sendBusiMsg(callerCallParam);
+        WssSessionMsg wssSessionMsgData = ((CallerWssSessionServiceImpl) wssSessionService).sendBusiMsg(callerCallParam);
         return wssSessionMsgData;
     }
 

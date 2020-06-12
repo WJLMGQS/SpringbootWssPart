@@ -19,11 +19,11 @@ public class ExceptionHandler {
     @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(SwpCustomizedException.class)
     public Map<String, Object> handleException(SwpCustomizedException e) {
-        log.error("code -> {} , msg -> {} , err -> {} " , e.getCode() , e.getMsg() , e);
         String msg = PropertiesConfig.getContextProperty(e.getCode(), e.getMsg());
         Map<String, Object> result = new HashMap<>();
         result.put("code", e.getCode());
         result.put("msg", msg);    //获取异常信息
+        log.error("code -> {} , msg -> {} , err -> {} " , e.getCode() , e.getMsg() , e);
         return result;
     }
 

@@ -24,12 +24,12 @@ public class CallerWssSessionServiceImpl extends AbstractWssSessionService {
     }
 
     /**
-     * 发送业务消息，需要暂存会话，等客户端响应后唤醒
+     * 发送业务消息，并暂存会话，等客户端响应后唤醒
      */
     public <T extends WssSessionMsg> T sendBusiMsg(WssCallerCallParam callerCallParam) {
         return (T) super.sendBusiMsg(callerCallParam.getClinicId() + "",//组装成已经连接客户端的标识
                 dozerBeanMapper.map(callerCallParam, CallSessionCallMsgData.class),
-                AbstractWssSessionService.HTTP_SLEEP_TIME_MAX_10000, WssSessionMsg.class); //定时从消息池中读取对应uuid的消息
+                WssSessionMsg.class); //定时从消息池中读取对应uuid的消息
     }
 
 

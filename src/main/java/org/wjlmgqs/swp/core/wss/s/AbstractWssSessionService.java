@@ -151,10 +151,18 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     }
 
 
+
     /**
      * 发送业务消息，需要暂存会话，等客户端响应后唤醒
      */
-    public <T extends WssSessionMsg> T sendBusiMsg(String clientId, WssSessionMsgData data, long maxCostTime, Class<T> tClass) {
+    public <T extends WssSessionMsg> T sendBusiMsg(String clientId, WssSessionMsgData data, Class<T> tClass) {
+return this.sendBusiMsg(clientId , data , tClass , AbstractWssSessionService.HTTP_SLEEP_TIME_MAX_10000); //定时从消息池中读取对应uuid的消息
+    }
+
+    /**
+     * 发送业务消息，需要暂存会话，等客户端响应后唤醒
+     */
+    public <T extends WssSessionMsg> T sendBusiMsg(String clientId, WssSessionMsgData data, Class<T> tClass, long maxCostTime) {
 
         String clinciSessionKey = sessionCacheKey(clientId + "", this.getWssClientType());
 
@@ -300,7 +308,6 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
             }
         }
     }
-
 
     /**
      * 处理客户端请求，默认实现
