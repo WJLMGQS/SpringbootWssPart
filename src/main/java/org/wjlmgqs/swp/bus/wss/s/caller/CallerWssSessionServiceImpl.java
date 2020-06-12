@@ -8,6 +8,9 @@ import org.wjlmgqs.swp.core.enums.WssClientType;
 import org.wjlmgqs.swp.core.wss.s.AbstractWssSessionService;
 import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
 
+/**
+ * Wss实现 - 叫号服务
+ */
 @Slf4j
 @Service
 public class CallerWssSessionServiceImpl extends AbstractWssSessionService {

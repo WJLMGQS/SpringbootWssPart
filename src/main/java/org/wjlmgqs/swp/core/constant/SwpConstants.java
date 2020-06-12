@@ -8,4 +8,9 @@ public class SwpConstants {
     public static final String JOB_THREAD_EXECUTOR_NAME = "asyncServiceExecutor";
 
 
+    /**
+     * 客户端心跳请求最小时间间隔
+     */
+    public static final int WSS_TIMER_CONNECT_HEART = 45;
+
 }

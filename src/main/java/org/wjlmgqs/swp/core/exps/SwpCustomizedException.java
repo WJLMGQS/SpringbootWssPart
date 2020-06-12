@@ -1,5 +1,6 @@
 package org.wjlmgqs.swp.core.exps;
 
+
 public class SwpCustomizedException extends RuntimeException {
 
     /**

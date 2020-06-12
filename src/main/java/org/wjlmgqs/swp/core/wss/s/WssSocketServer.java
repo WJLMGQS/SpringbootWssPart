@@ -3,6 +3,7 @@ package org.wjlmgqs.swp.core.wss.s;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.wjlmgqs.swp.core.constant.SwpConstants;
 import org.wjlmgqs.swp.core.enums.WssClientType;
 import org.wjlmgqs.swp.core.enums.WssSessionType;
 import org.wjlmgqs.swp.core.utils.EnumUtils;
@@ -42,7 +43,7 @@ public class WssSocketServer extends AbstractWssSocketServer {
         long currTime = new Date().getTime();//当前时间
         WssSessionType sessionType = EnumUtils.getEnumByCode(WssSessionType.class, sessionMsg.getSessionType());//当前数据包的通讯会话类型
         if (WssSessionType.HEART == sessionType) {//心跳检测：心跳检测频次限制
-            long heart = currTime - this.getLastHeartTimer() - 25 * 1000;//超过指定时间多少秒
+            long heart = currTime - this.getLastHeartTimer() - SwpConstants.WSS_TIMER_CONNECT_HEART * 1000;//超过指定时间多少秒
             boolean flag = this.getLastHeartTimer() > 0 && heart < 0;//2次请求间隔小于指定时间
             log.info("【客户端心跳检测】" + (flag ? "【强制屏蔽】" : "") + " SessionId -> {} , 上一次访问时间 lastTimer -> {} , 当前时间 currTimer -> {} , 间隔 -> {} , 会话信息[{}]  ",
                     session.getId(), this.getLastHeartTimer(), currTime, (currTime - this.getLastHeartTimer()), this.getSessionInfo());
@@ -62,6 +63,10 @@ public class WssSocketServer extends AbstractWssSocketServer {
             this.closeUnsafeSession(msg, session, sessionType);
         } else if (WssSessionType.SERVER == sessionType) {//业务通信-云管家请求客户端
             WssSessionMsgData sessionMsgData = JSON.parseObject(sessionMsg.getData(), WssSessionMsgData.class);
+
+            getWssSessionService().msgCacheKey(sessionMsg.getUuid());
+
+
             String msgCacheKey = AbstractWssSessionService.msgCacheKey(sessionMsg.getUuid(), this.getWssType());
             RedisUtils.set(msgCacheKey, sessionMsg.getData(), AbstractWssSessionService.CACHE_TIME_DATA_EXPIRE_10000);
         } else if (WssSessionType.CLIENT == sessionType) {//业务通信-客户端请求云管家

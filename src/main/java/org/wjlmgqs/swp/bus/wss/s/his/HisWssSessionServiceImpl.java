@@ -12,6 +12,9 @@ import org.wjlmgqs.swp.core.wss.s.WssSessionMsg;
 import javax.websocket.Session;
 import java.util.Date;
 
+/**
+ * Wss实现 - 医保服务
+ */
 @Slf4j
 @Service
 public class HisWssSessionServiceImpl extends AbstractWssSessionService {

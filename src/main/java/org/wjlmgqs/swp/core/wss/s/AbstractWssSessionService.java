@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Wss服务实现基类，所有对接的客户端实现都必须继承该类
+ */
 @Slf4j
 public abstract class AbstractWssSessionService implements IWssSessionService {
 
@@ -39,13 +42,15 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
 
 
     /**
-     * 将自己做未服务注册到服务池里
+     * 服务注册到服务池里
      */
     public AbstractWssSessionService() {
+        //客户端实现类注册到服务池
         WSS_SESSION_SERVICES.put(this.getWssClientType().getCode(), this.getClass());
+        //初始化客户端会话和任务池
         WSS_TASKS.put(this.getWssClientType().getCode(), new ConcurrentHashMap<>());
         WSS_SESSIONS.put(this.getWssClientType().getCode(), new ConcurrentHashMap<>());
-        log.debug("...AbstractWssSessionService.init 添加wssType -> {} ");
+        log.info("...wss服务 注册客户端服务 添加wssType -> {} ");
     }
 
     /**
@@ -53,14 +58,25 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
      */
     public abstract WssClientType getWssClientType();
 
+    /**
+     * 客服端服务获取所有的通讯任务队列
+     */
     public ConcurrentHashMap<String, WssSessionTaskCahceList> getSocketTasks() {
         return WSS_TASKS.get(this.getWssClientType().getCode());
     }
 
+
+    /**
+     * 客服端服务获取所有的通讯会话
+     */
     public ConcurrentHashMap<String, Session> getSocketSessions() {
         return WSS_SESSIONS.get(this.getWssClientType().getCode());
     }
 
+
+    /**
+     * 客服端服务获取所有的通讯会话
+     */
     public static ConcurrentHashMap<String, Session> getSocketSessions(WssClientType wssType) {
         return WSS_SESSIONS.get(wssType.getCode());
     }
@@ -69,8 +85,8 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
     /**
      * redis key 操作
      */
-    public static String msgCacheKey(String uuid, WssClientType wssType) {
-        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_MSG + wssType.getCode() + "_", uuid);
+    public String msgCacheKey(String uuid) {
+        return SwpRedisKeys.getBuzKey(SwpRedisKeys.FUNC_WSS_CLIENT_MSG + this.getWssClientType().getCode() + "_", uuid);
     }
 
     public static String sessionCacheKey(String clientId, WssClientType wssType) {
@@ -87,7 +103,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
 
 
     /**
-     * 客户端请求服务端时，发送加入消息，服务端返回加入成功消息：避免服务端数据解析异常等情况
+     * 客户端请求加入会话，服务端返回加入成功消息
      */
     public WssSession joinSession(Session session, WssSessionMsg sessionMsg) {
         WssSessionMsgOpenSession openSession = JSON.parseObject(sessionMsg.getData(), WssSessionMsgOpenSession.class);
@@ -106,9 +122,9 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
             results.put("msg", "success");
             String msg = JSON.toJSONString(results);
             sendClientSessionMsg(session, sessionMsg.setData(msg));
-            log.info("{}服务 clientId -> {} ，发送加入会话信息 , msg -> {} ", this.getWssClientType().getCode(), clientId, msg);
+            log.info("{}服务 clientId -> {} ，成功加入会话 , msg -> {} ", this.getWssClientType().getCode(), clientId, msg);
         } catch (Exception e) {
-            log.error("{}服务 clientId -> {} ，添加诊所会话异常 , msg -> {} ", this.getWssClientType().getCode(), clientId, JSON.toJSONString(sessionMsg));
+            log.error("{}服务 clientId -> {} ，加入会话失败 , msg -> {} ", this.getWssClientType().getCode(), clientId, JSON.toJSONString(sessionMsg));
             e.printStackTrace();
             return null;
         }
@@ -156,7 +172,7 @@ public abstract class AbstractWssSessionService implements IWssSessionService {
                         .setMsg(message)
                         .setTime(currTimer));
 
-        String msgCacheKey = msgCacheKey(clinicKey, this.getWssClientType());
+        String msgCacheKey = msgCacheKey(clinicKey);
         return readClientMsg(clinicKey, msgCacheKey, currTimer, this.getWssClientType(), maxCostTime, tClass); //定时从消息池中读取对应uuid的消息
     }
 

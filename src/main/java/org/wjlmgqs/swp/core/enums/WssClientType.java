@@ -1,5 +1,8 @@
 package org.wjlmgqs.swp.core.enums;
 
+import org.springframework.stereotype.Service;
+import org.wjlmgqs.swp.core.wss.s.AbstractWssSessionService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,10 +11,20 @@ import java.util.Map;
  */
 public class WssClientType {
 
+    /**
+     * 所有已实现AbstractWssSessionService接口的客户端服务自动注册服务类型到该Map
+     * @see AbstractWssSessionService
+     */
     private static Map<String, WssClientType> ENUM_MAPS = new HashMap<>();
 
+    /**
+     * 客户端类型 - 代码
+     */
     private String code;
 
+    /**
+     * 客户端类型 - 描述
+     */
     private String value;
 
     WssClientType(String code, String value) {
