@@ -11,7 +11,7 @@
 
 ### 设计
     
-#####目录结构：org/wjlmgqs/swp
+#####  目录结构：org/wjlmgqs/swp
     
         * resources：wss通讯依赖的资源及环境配置，含redis、spring线程池等配置
         
