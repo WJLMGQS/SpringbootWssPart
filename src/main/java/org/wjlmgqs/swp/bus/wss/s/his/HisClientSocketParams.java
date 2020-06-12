@@ -4,7 +4,7 @@ import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
 
 /**
  * 医保客户端通信壳
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2018/10/25 17:11
  */
 public class HisClientSocketParams<T extends HisClientSocketParams > extends WssSessionMsgData<T> {

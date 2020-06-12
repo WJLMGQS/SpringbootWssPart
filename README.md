@@ -90,6 +90,15 @@
         }
     }
 
+#####  步骤四：修改redis连接源：application.yml
+
+  redis:
+      database: 0 #数据库索引，默认是0
+      host: 127.0.0.1 #节点地址-必填
+      port: 6379 #节点端口-必填
+      password: wjl1234567890 #密码，默认无
+
+
 
 
     

@@ -7,7 +7,7 @@ import org.wjlmgqs.swp.core.wss.s.WssSessionMsgData;
 
 /**
  * 叫号记录对象
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2018/10/25 17:11
  */
 @Getter

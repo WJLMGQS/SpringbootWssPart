@@ -15,7 +15,7 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.util.*;
 
 /**
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2018/2/28 16:38
  */
 @Component

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 枚举工具集合（必须实现EnumInterface接口）
  *
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2018/9/12
  */
 public class EnumUtils {

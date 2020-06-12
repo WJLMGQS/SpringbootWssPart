@@ -18,7 +18,7 @@ import java.util.Date;
  * websockt服务中心：叫号、医保
  * 汇总登记websocket客户端
  *
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2018/10/28 14:04
  */
 @ServerEndpoint(value = "/wss/{action}")

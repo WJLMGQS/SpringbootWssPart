@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 /**
  * wss服务触发
  *
- * @author wengjialin@dxy.cn
+ * @author wjlmgqs@sina.com
  * @date 2019/2/12
  */
 @RestController
